@@ -1,0 +1,55 @@
+import wollok.game.*
+
+object juego{
+	var property zombies = []
+	var property girasoles = []
+	
+  method iniciar(){
+	game.title("Plantas vs Zombies")
+	game.width(30)
+	game.height(20)
+	game.boardGround("fondo.png")
+    game.start()
+    game.onTick(4000, "zombie aparece",{ self.agregar_zombie() })
+    game.onTick(2000, "zombie se mueve", { zombies.forEach{zombie=> zombie.avanzar()} })
+    keyboard.enter().onPressDo { self.agregar_girasol() }
+  }
+  
+  method agregar_zombie(){
+  	const zombie = new Zombiecomun()
+  	game.addVisual(zombie)
+  	zombies.add(zombie)
+  	
+  }
+  method agregar_girasol(){
+  	const girasol = new Girasol()
+  	game.addVisual(girasol)
+  	girasoles.add(girasol)
+  }
+  
+}
+class Plantas{
+	var durabilidad = 0
+} 
+
+class Girasol inherits Plantas(durabilidad = 20){
+  method image() = "girasol.png"
+  method position() = game.at(3, 4.randomUpTo(14))
+}
+
+class Zombie {
+	var property vida = 0
+	var property proteccion = 0
+  method atacar(){
+  	
+  }
+  
+}
+class Zombiecomun inherits Zombie(vida = 10, proteccion = 0){
+  var property position = game.at(25, 4.randomUpTo(14))
+  method image() = "zombiecomun.png"
+  
+  method avanzar(){
+	position = position.left(1)
+  }
+}
