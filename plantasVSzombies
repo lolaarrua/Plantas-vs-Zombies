@@ -1,55 +1,120 @@
 import wollok.game.*
 
 object juego{
-	var property zombies = []
-	var property girasoles = []
-	
-  method iniciar(){
-	game.title("Plantas vs Zombies")
-	game.width(30)
-	game.height(20)
-	game.boardGround("fondo.png")
-    game.start()
-    game.onTick(4000, "zombie aparece",{ self.agregar_zombie() })
-    game.onTick(2000, "zombie se mueve", { zombies.forEach{zombie=> zombie.avanzar()} })
-    keyboard.enter().onPressDo { self.agregar_girasol() }
-  }
-  
-  method agregar_zombie(){
-  	const zombie = new Zombiecomun()
-  	game.addVisual(zombie)
-  	zombies.add(zombie)
-  	
-  }
-  method agregar_girasol(){
-  	const girasol = new Girasol()
-  	game.addVisual(girasol)
-  	girasoles.add(girasol)
-  }
-  
-}
-class Plantas{
-	var durabilidad = 0
-} 
+var property zombies = []
+var property girasoles = []
+var property plantas = []
+var property soles = 25
 
-class Girasol inherits Plantas(durabilidad = 20){
-  method image() = "girasol.png"
-  method position() = game.at(3, 4.randomUpTo(14))
+  method iniciar(){
+game.title("Plantas vs Zombies")
+game.width(30)
+game.height(20)
+game.boardGround("fondo.png")
+    game.start()
+    self.mostrar_soles()
+    game.onTick(10000, "zombie aparece", { self.agregar_zombiecomun() })
+    game.onTick(30000, "zombie con casco aparece", { self.agregar_zombieconCasco() })
+    game.onTick(8000, "se genera sol", { girasoles.forEach{girasol=> self.generar_soles()} })
+    game.onTick(6000, "zombie se mueve", { zombies.forEach{zombie=> zombie.avanzar()} })
+    keyboard.enter().onPressDo { self.agregar_girasol() }
+    keyboard.space().onPressDo { self.agregar_nuez() }
+  }
+
+method agregar_zombiecomun(){
+  const zombie = new Zombiecomun()
+  game.addVisual(zombie)
+  zombies.add(zombie)
+ 
+  } 
+  
+method agregar_zombieconCasco(){
+  const zombieconcasco = new ZombieconCasco()
+  game.addVisual(zombieconcasco)
+  zombies.add(zombieconcasco)
+ 
+  } 
+  
+method agregar_nuez(){	
+  if(soles>=50){	
+  const nuez = new Nuez()
+  game.addVisual(nuez)
+  plantas.add(nuez)
+  soles = soles - 50
+  return true
+  }
+  return false
+  }  
+  
+method agregar_girasol(){	
+  if(soles>=25){	
+  const girasol = new Girasol()
+  game.addVisual(girasol)
+  girasoles.add(girasol)
+  plantas.add(girasol)
+  soles = soles - 25
+  return true
+  }
+  return false
+  }
+  
+method generar_soles(){
+  soles = soles + 25 
+  }
+ 
+method mostrar_soles(){
+  game.addVisual(cantidadSoles)
+  }
+}
+
+class Plantas{
+var property durabilidad = 0
+var property position = game.at(3, 3.randomUpTo(15))
+}
+
+class Nuez inherits Plantas(durabilidad = 30){
+	
+method image() = "nuez.png"	
+}
+
+class Girasol inherits Plantas(durabilidad = 15){
+var property soles = juego.soles()
+  
+method image() = "girasol.png"
+ 
 }
 
 class Zombie {
-	var property vida = 0
-	var property proteccion = 0
-  method atacar(){
-  	
-  }
-  
-}
-class Zombiecomun inherits Zombie(vida = 10, proteccion = 0){
-  var property position = game.at(25, 4.randomUpTo(14))
-  method image() = "zombiecomun.png"
-  
-  method avanzar(){
+var property position = game.at(25, 4.randomUpTo(14))
+var property vida = 0
+
+method avanzar(){
 	position = position.left(1)
   }
+
 }
+
+class Zombiecomun inherits Zombie(vida = 10){
+	
+method image() = "zombiecomun.png"
+}
+  
+class ZombieconCasco inherits Zombie(vida = 15){
+	
+method image() = "zombieconCasco.png"
+}
+
+
+object paleta {
+const property blanco = "FFFFFFFF"
+}
+
+object cantidadSoles {
+	
+method position() = game.at(3,18)
+	
+method image() = "sol.png"
+	
+method text() = ("Tus soles: " + juego.soles())
+	
+method textColor() = paleta.blanco()
