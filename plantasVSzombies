@@ -76,7 +76,6 @@ object juego{
 	method agregar_nuez(){
   		if(soles>=50){	
   			var nuez = new Nuez()
-  			nuez.posicion_distinta()
   			game.addVisual(nuez)
   			plantas.add(nuez)
   			soles = soles - 50
@@ -88,7 +87,6 @@ object juego{
 	method agregar_girasol(){	
   		if(soles>=25){	
   			var girasol = new Girasol()
-  			girasol.posicion_distinta()
   			game.addVisual(girasol)
  			girasoles.add(girasol)
   			plantas.add(girasol)
@@ -101,7 +99,6 @@ object juego{
   	method agregar_lanzaguisantes(){
 		if(soles>=100){
 			var lanzaguisante = new Lanzaguisantes()
-			lanzaguisante.posicion_distinta()
 			game.addVisual(lanzaguisante)
 			plantas.add(lanzaguisante)
 			lanzaguisantes.add(lanzaguisante)
@@ -126,17 +123,10 @@ object juego{
 
 class Plantas{
 	var property durabilidad = 0
-	var property position = game.at(1, 1)
+	var property position = game.at(1, 1.randomUpTo(5).truncate(0))
 	var property nombre = 'planta'
 	
-	method posicion_distinta(){
-		game.allVisuals().forEach{visual =>
-			if (game.getObjectsIn(self.position()).get(0).nombre()==nombre){
-			//self.position().y() (self.position().y()+1)
-			position = game.at(self.position().x(),self.position().y()+1)
-		}
 		
-		}
 	}
 	
 	method perder_durabilidad(){ 
@@ -150,7 +140,7 @@ method desaparecer(){
 	game.removeVisual(self)
 }
 }
-class Nuez inherits Plantas(durabilidad = 30, position = game.at(3, 1)){
+class Nuez inherits Plantas(durabilidad = 30, position = game.at(3, 1.randomUpTo(5).truncate(0))){
 	method image() = "nuez.png"	
 
 }
@@ -160,7 +150,7 @@ class Girasol inherits Plantas(durabilidad = 15){
  
 }
 
-class Lanzaguisantes inherits Plantas(durabilidad = 15, position = game.at(2,1)){
+class Lanzaguisantes inherits Plantas(durabilidad = 15, position = game.at(2,1.randomUpTo(5).truncate(0))){
 	method image() = "lanzaguisantes.png"
 	
 	
