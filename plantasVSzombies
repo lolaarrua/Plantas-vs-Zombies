@@ -18,7 +18,6 @@ object juego{
     	game.start()
     	self.mostrar_soles()
     	self.crear_invisibles()
-    	//el collide no está completo xq le falta la consecuencia bien hecha
     	invisibles.forEach{invisible =>game.whenCollideDo(invisible, {algo => game.stop()})}
     	game.onTick(10000, "zombie aparece", { self.agregar_zombiecomun() })
     	game.onTick(30000, "zombie con casco aparece", { self.agregar_zombieconCasco() })
