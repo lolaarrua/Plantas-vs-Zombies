@@ -183,7 +183,10 @@ class Guisante{
 
 
 
-class Zombie { var property nombre = 'zombie' var property position = game.at(11, 1.randomUpTo(5).truncate(0)) var property vida = 0 var property colision = []
+class Zombie { 
+var property nombre = 'zombie' 
+var property position = game.at(11, 1.randomUpTo(5).truncate(0)) 
+var property vida = 0 
 
 method avanzar(){
 	if (not(self.parar())){
