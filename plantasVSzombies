@@ -1,120 +1,240 @@
 import wollok.game.*
 
 object juego{
-var property zombies = []
-var property girasoles = []
-var property plantas = []
-var property soles = 25
+	var property zombies = []
+	var property girasoles = []
+	var property lanzaguisantes = []
+	var property plantas = []
+	var property invisibles = []
+	var property guisantes = []
+	var property soles = 25
 
-  method iniciar(){
-game.title("Plantas vs Zombies")
-game.width(30)
-game.height(20)
-game.boardGround("fondo.png")
-    game.start()
-    self.mostrar_soles()
-    game.onTick(10000, "zombie aparece", { self.agregar_zombiecomun() })
-    game.onTick(30000, "zombie con casco aparece", { self.agregar_zombieconCasco() })
-    game.onTick(8000, "se genera sol", { girasoles.forEach{girasol=> self.generar_soles()} })
-    game.onTick(6000, "zombie se mueve", { zombies.forEach{zombie=> zombie.avanzar()} })
-    keyboard.enter().onPressDo { self.agregar_girasol() }
-    keyboard.space().onPressDo { self.agregar_nuez() }
-  }
+  	method iniciar(){
+		game.title("Plantas vs Zombies")
+		game.width(30)
+		game.height(20)
+		game.boardGround("fondo.png")
+    	game.start()
+    	self.mostrar_soles()
+    	self.crear_invisibles()
+    	//el collide no está completo xq le falta la consecuencia bien hecha
+    	invisibles.forEach{invisible =>game.whenCollideDo(invisible, {algo => game.stop()})}
+    	game.onTick(10000, "zombie aparece", { self.agregar_zombiecomun() })
+    	game.onTick(30000, "zombie con casco aparece", { self.agregar_zombieconCasco() })
+    	game.onTick(8000, "se genera sol", { girasoles.forEach{girasol=> self.generar_soles()} })
+    	game.onTick(2000, "zombie se mueve", { zombies.forEach{zombie=> zombie.avanzar()} })
+    	game.onTick(2000, "lanzaguisantes lanza guisante", { lanzaguisantes.forEach{lanzaguisante=> lanzaguisante.lanzar_guisante()} })
+    	game.schedule(120000,{game.removeTickEvent("zombie aparece")})
+    	game.schedule(120000,{game.removeTickEvent("zombie con casco aparece")})
+    	
+    	keyboard.enter().onPressDo { self.agregar_girasol() }
+    	keyboard.space().onPressDo { self.agregar_nuez() }
+    	keyboard.control().onPressDo { self.agregar_lanzaguisantes() }
+    	
+  	}
 
-method agregar_zombiecomun(){
-  const zombie = new Zombiecomun()
-  game.addVisual(zombie)
-  zombies.add(zombie)
- 
-  } 
-  
-method agregar_zombieconCasco(){
-  const zombieconcasco = new ZombieconCasco()
-  game.addVisual(zombieconcasco)
-  zombies.add(zombieconcasco)
- 
-  } 
-  
-method agregar_nuez(){	
-  if(soles>=50){	
-  const nuez = new Nuez()
-  game.addVisual(nuez)
-  plantas.add(nuez)
-  soles = soles - 50
-  return true
-  }
-  return false
-  }  
-  
-method agregar_girasol(){	
-  if(soles>=25){	
-  const girasol = new Girasol()
-  game.addVisual(girasol)
-  girasoles.add(girasol)
-  plantas.add(girasol)
-  soles = soles - 25
-  return true
-  }
-  return false
-  }
-  
-method generar_soles(){
-  soles = soles + 25 
-  }
- 
-method mostrar_soles(){
-  game.addVisual(cantidadSoles)
-  }
+	method lanzar_guisante(){
+		const guisante = new Guisante(position = (lanzaguisantes.forEach{lanzaguisantes => lanzaguisantes.position().right(1)}))
+		game.addVisual(guisante)
+		guisantes.add(guisante)
+		guisante.moverse()
+		game.onCollideDo(self,{zombie=>
+			if(zombie.nombre() == 'zombie'){
+				zombie.vida(zombie.vida() - 5)
+				if(zombie.vida() <= 0){
+					self.desaparecer_zombie()
+				}
+			}
+		})
+		
+	}
+
+	method desaparecer_zombie(){
+		if(zombies.forEach{zombie=> zombie.vida()} <= 0){
+		game.removeVisual(zombies)
+	}
 }
+	method crear_invisibles(){
+		(0..20).forEach{ y => invisibles.add(new Invisible(position = game.at(0 , y)))}
+		invisibles.forEach{invisible => game.addVisual(invisible)}
+	}
+
+
+	method agregar_zombiecomun(){
+  		const zombie = new Zombiecomun()
+  		game.addVisual(zombie)
+  		zombies.add(zombie)
+  	} 
+  
+	method agregar_zombieconCasco(){
+  		const zombieconcasco = new ZombieconCasco()
+  		game.addVisual(zombieconcasco)
+  		zombies.add(zombieconcasco)
+  	} 
+  
+	method agregar_nuez(){
+  		if(soles>=50){	
+  			const nuez = new Nuez()
+  			game.addVisual(nuez)
+  			plantas.add(nuez)
+  			soles = soles - 50
+  		return true
+  		}
+  	return false
+  	}  
+  
+	method agregar_girasol(){	
+  		if(soles>=25){	
+  			const girasol = new Girasol()
+  			game.addVisual(girasol)
+ 			girasoles.add(girasol)
+  			plantas.add(girasol)
+  			soles = soles - 25
+  		return true
+  		}
+  	return false
+  	}
+  	
+  	method agregar_lanzaguisantes(){
+		if(soles>=100){
+			const lanzaguisante = new Lanzaguisantes()
+			game.addVisual(lanzaguisante)
+			plantas.add(lanzaguisante)
+			lanzaguisantes.add(lanzaguisante)
+			soles = soles - 100
+		return true
+		}
+	return false
+	}
+  	
+  
+	method generar_soles(){
+  		soles = soles + 25 
+  	}
+ 
+	method mostrar_soles(){
+  		game.addVisual(cantidadSoles)
+  		}
+	}
+
+
+
 
 class Plantas{
-var property durabilidad = 0
-var property position = game.at(3, 3.randomUpTo(15))
+	var property durabilidad = 0
+	var property position = game.at(3, 3.randomUpTo(15).truncate(0))
+	var property nombre = 'planta'
+	
+	method perder_durabilidad(){
+	durabilidad-=1
+	//if(durabilidad<=0){
+		//juego.desaparecer()
+	//}
 }
 
-class Nuez inherits Plantas(durabilidad = 30){
-	
-method image() = "nuez.png"	
+}
+
+class Nuez inherits Plantas(durabilidad = 30, position = game.at(9, 3.randomUpTo(15).truncate(0))){
+	method image() = "nuez.png"	
+
 }
 
 class Girasol inherits Plantas(durabilidad = 15){
-var property soles = juego.soles()
-  
-method image() = "girasol.png"
+	var property soles = juego.soles()
+	method image() = "girasol.png"
  
 }
 
-class Zombie {
-var property position = game.at(25, 4.randomUpTo(14))
-var property vida = 0
-
-method avanzar(){
-	position = position.left(1)
-  }
-
+class Lanzaguisantes inherits Plantas(durabilidad = 15, position = game.at(6, 3.randomUpTo(15).truncate(0))){
+	method image() = "lanzaguisantes.png"
 }
 
-class Zombiecomun inherits Zombie(vida = 10){
+class Guisante{
+	var position
+	method image() = "guisante.png"
+	method position() = position
 	
-method image() = "zombiecomun.png"
+	method moverse(){
+		game.onTick(200,"guisante",{position = position.right(1)})
+		if(position.x() > game.width()){
+			game.removeTickEvent("guisante")
+				game.removeVisual(self)
+		}
+	}
+}
+
+
+
+
+class Zombie {
+	var property nombre = 'zombie'
+	var property position = game.at(25, 4.randomUpTo(14).truncate(0))
+	var property vida = 0
+	var property colision = []
+
+	method avanzar(){
+		if (not(self.parar())){
+			position = position.left(1)		
+		}
+  	}
+
+	method parar(){
+		var valor = 0
+		game.allVisuals().forEach{visual =>
+			if (visual.position() == position.left(1) and visual.nombre() == 'planta'){
+				valor +=1
+				self.atacar()
+			} 
+			}
+	return valor > 0
+
+	}
+	
+	method atacar(){
+		game.allVisuals().forEach{visual =>
+		if (visual.position() == position.left(1) and visual.nombre() == 'planta'){
+			visual.durabilidad()(visual.durabilidad() - 5)	
+		}
+	}
+	}
+	
+	method perder_vida(){
+	vida-=1
+		if(vida<=0){
+		juego.desaparecer_zombie()}
+		
+}
+}
+class Zombiecomun inherits Zombie(vida = 10){
+	method image() = "zombiecomun.png"
+
 }
   
-class ZombieconCasco inherits Zombie(vida = 15){
-	
-method image() = "zombieconCasco.png"
+class ZombieconCasco inherits Zombie(vida = 15){	
+	method image() = "zombieconCasco.png"
+
 }
 
 
 object paleta {
-const property blanco = "FFFFFFFF"
+	const property blanco = "FFFFFFFF"
+	var property nombre = 'paleta'
 }
 
 object cantidadSoles {
+
+	var property nombre = 'soles'
+	method position() = game.at(3,18)
 	
-method position() = game.at(3,18)
+	method image() = "sol.png"
 	
-method image() = "sol.png"
-	
-method text() = ("Tus soles: " + juego.soles())
+	method text() = ("Tus soles: " + juego.soles())
 	
 method textColor() = paleta.blanco()
+}
+
+class Invisible{
+	var property position
+	method image() = "invisible.png"
+
+}
