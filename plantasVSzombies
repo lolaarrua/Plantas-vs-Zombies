@@ -11,8 +11,9 @@ object juego{
 
   	method iniciar(){
 		game.title("Plantas vs Zombies")
-		game.width(30)
-		game.height(20)
+		game.cellSize(140)
+		game.width(11)
+		game.height(7)
 		game.boardGround("fondo.png")
     	game.start()
     	self.mostrar_soles()
@@ -55,7 +56,7 @@ object juego{
 	}
 }
 	method crear_invisibles(){
-		(0..20).forEach{ y => invisibles.add(new Invisible(position = game.at(0 , y)))}
+		(0..7).forEach{ y => invisibles.add(new Invisible(position = game.at(0 , y)))}
 		invisibles.forEach{invisible => game.addVisual(invisible)}
 	}
 
@@ -74,7 +75,8 @@ object juego{
   
 	method agregar_nuez(){
   		if(soles>=50){	
-  			const nuez = new Nuez()
+  			var nuez = new Nuez()
+  			nuez.posicion_distinta()
   			game.addVisual(nuez)
   			plantas.add(nuez)
   			soles = soles - 50
@@ -85,7 +87,8 @@ object juego{
   
 	method agregar_girasol(){	
   		if(soles>=25){	
-  			const girasol = new Girasol()
+  			var girasol = new Girasol()
+  			girasol.posicion_distinta()
   			game.addVisual(girasol)
  			girasoles.add(girasol)
   			plantas.add(girasol)
@@ -97,7 +100,8 @@ object juego{
   	
   	method agregar_lanzaguisantes(){
 		if(soles>=100){
-			const lanzaguisante = new Lanzaguisantes()
+			var lanzaguisante = new Lanzaguisantes()
+			lanzaguisante.posicion_distinta()
 			game.addVisual(lanzaguisante)
 			plantas.add(lanzaguisante)
 			lanzaguisantes.add(lanzaguisante)
@@ -122,31 +126,44 @@ object juego{
 
 class Plantas{
 	var property durabilidad = 0
-	var property position = game.at(3, 3.randomUpTo(15).truncate(0))
+	var property position = game.at(1, 1)
 	var property nombre = 'planta'
 	
-	method perder_durabilidad(){
-	durabilidad-=1
-	//if(durabilidad<=0){
-		//juego.desaparecer()
-	//}
-}
+	method posicion_distinta(){
+		game.allVisuals().forEach{visual =>
+			if (game.getObjectsIn(self.position()).get(0).nombre()==nombre){
+			//self.position().y() (self.position().y()+1)
+			position = game.at(self.position().x(),self.position().y()+1)
+		}
+		
+		}
+	}
+	
+	method perder_durabilidad(){ 
+	durabilidad-=1 
+	if(durabilidad<=0){ 
+		self.desaparecer()
+	}
+	 }
 
+method desaparecer(){
+	game.removeVisual(self)
 }
-
-class Nuez inherits Plantas(durabilidad = 30, position = game.at(9, 3.randomUpTo(15).truncate(0))){
+}
+class Nuez inherits Plantas(durabilidad = 30, position = game.at(3, 1)){
 	method image() = "nuez.png"	
 
 }
-
 class Girasol inherits Plantas(durabilidad = 15){
 	var property soles = juego.soles()
 	method image() = "girasol.png"
  
 }
 
-class Lanzaguisantes inherits Plantas(durabilidad = 15, position = game.at(6, 3.randomUpTo(15).truncate(0))){
+class Lanzaguisantes inherits Plantas(durabilidad = 15, position = game.at(2,1)){
 	method image() = "lanzaguisantes.png"
+	
+	
 }
 
 class Guisante{
@@ -166,44 +183,25 @@ class Guisante{
 
 
 
-class Zombie {
-	var property nombre = 'zombie'
-	var property position = game.at(25, 4.randomUpTo(14).truncate(0))
-	var property vida = 0
-	var property colision = []
+class Zombie { var property nombre = 'zombie' var property position = game.at(11, 1.randomUpTo(5).truncate(0)) var property vida = 0 var property colision = []
 
-	method avanzar(){
-		if (not(self.parar())){
-			position = position.left(1)		
-		}
-  	}
-
-	method parar(){
-		var valor = 0
-		game.allVisuals().forEach{visual =>
-			if (visual.position() == position.left(1) and visual.nombre() == 'planta'){
-				valor +=1
-				self.atacar()
-			} 
-			}
-	return valor > 0
-
+method avanzar(){
+	if (not(self.parar())){
+		position = position.left(1)		
 	}
-	
-	method atacar(){
-		game.allVisuals().forEach{visual =>
-		if (visual.position() == position.left(1) and visual.nombre() == 'planta'){
-			visual.durabilidad()(visual.durabilidad() - 5)	
-		}
-	}
-	}
-	
-	method perder_vida(){
-	vida-=1
-		if(vida<=0){
-		juego.desaparecer_zombie()}
-		
 }
+
+method parar(){
+	var valor = 0
+	game.allVisuals().forEach{visual =>
+		if (visual.position() == position.left(1) and visual.nombre() == 'planta'){
+			valor +=1
+		visual.perder_durabilidad()
+		} 
+	}
+	return valor > 0
+	}
+
 }
 class Zombiecomun inherits Zombie(vida = 10){
 	method image() = "zombiecomun.png"
@@ -224,7 +222,7 @@ object paleta {
 object cantidadSoles {
 
 	var property nombre = 'soles'
-	method position() = game.at(3,18)
+	method position() = game.at(1,6)
 	
 	method image() = "sol.png"
 	
@@ -234,7 +232,8 @@ method textColor() = paleta.blanco()
 }
 
 class Invisible{
+	var property nombre = 'invisible'
 	var property position
-	method image() = "invisible.png"
+	method image() = "transparente.png"
 
 }
