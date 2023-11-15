@@ -24,8 +24,8 @@ object juego{
     	game.onTick(8000, "se genera sol", { girasoles.forEach{girasol=> self.generar_soles()} })
     	game.onTick(2000, "zombie se mueve", { zombies.forEach{zombie=> zombie.avanzar()} })
     	game.onTick(2000, "lanzaguisantes lanza guisante", { lanzaguisantes.forEach{lanzaguisante=> lanzaguisante.lanzar_guisante()} })
-    	game.schedule(120000,{game.removeTickEvent("zombie aparece")})
-    	game.schedule(120000,{game.removeTickEvent("zombie con casco aparece")})
+    	game.schedule(90000,{game.removeTickEvent("zombie aparece")})
+    	game.schedule(90000,{game.removeTickEvent("zombie con casco aparece")})
     	
     	keyboard.enter().onPressDo { self.agregar_girasol() }
     	keyboard.space().onPressDo { self.agregar_nuez() }
