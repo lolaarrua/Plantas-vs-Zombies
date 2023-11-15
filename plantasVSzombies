@@ -21,8 +21,8 @@ object juego{
     	invisibles.forEach{invisible =>game.whenCollideDo(invisible, {algo => game.stop()})}
     	game.onTick(10000, "zombie aparece", { self.agregar_zombiecomun() })
     	game.onTick(30000, "zombie con casco aparece", { self.agregar_zombieconCasco() })
-    	game.onTick(8000, "se genera sol", { girasoles.forEach{girasol=> self.generar_soles()} })
-    	game.onTick(2000, "zombie se mueve", { zombies.forEach{zombie=> zombie.avanzar()} })
+    	game.onTick(7000, "se genera sol", { girasoles.forEach{girasol=> self.generar_soles()} })
+    	game.onTick(4000, "zombie se mueve", { zombies.forEach{zombie=> zombie.avanzar()} })
     	game.onTick(2000, "lanzaguisantes lanza guisante", { lanzaguisantes.forEach{lanzaguisante=> lanzaguisante.lanzar_guisante()} })
     	game.schedule(90000,{game.removeTickEvent("zombie aparece")})
     	game.schedule(90000,{game.removeTickEvent("zombie con casco aparece")})
@@ -109,12 +109,12 @@ object juego{
 
 class Plantas{
 	var property durabilidad = 0
-	var property position = game.at(1, 1.randomUpTo(6).truncate(0))
+	var property position = game.at(1, 1)
 	var property nombre = "planta"
 	
 	
 	method perder_durabilidad(){ 
-		durabilidad-=1 
+		durabilidad-=5 
 		if(durabilidad<=0){ 
 			self.desaparecer()
 	}
@@ -123,21 +123,30 @@ class Plantas{
 	method desaparecer(){
 		game.removeVisual(self)
 	}	
-}		
-		
-class Nuez inherits Plantas(durabilidad = 30, position = game.at(3, 1.randomUpTo(6).truncate(0))){
-	method image() = "nuez.png"	
 
+	method posicion_distinta(){
+		(game.getObjectsIn(position)).forEach{visual =>
+			if (visual.nombre() == "planta" and visual.position() == self.position()){
+			position = game.at(position.x(), position.y()+1)} 
+			
 	}
+		}
+
+}
+
 class Girasol inherits Plantas(durabilidad = 15){
 	var property soles = juego.soles()
 	method image() = "girasol.png"
  
 	}
 
+class Nuez inherits Plantas(durabilidad = 30, position = game.at(3, 1.randomUpTo(6).truncate(0))){
+	method image() = "nuez.png"	
+
+	}
+
 class Lanzaguisantes inherits Plantas(durabilidad = 15, position = game.at(2,1.randomUpTo(6).truncate(0))){
 	method image() = "lanzaguisantes.png"
-	
 	
 	}
 
@@ -180,7 +189,7 @@ method parar(){
 			}
 
 	method perder_vida(){ 
-		vida-=1 
+		vida-=5
 		if(vida<=0){ 
 			self.desaparecer()
 	}
