@@ -40,19 +40,11 @@ object juego{
 		guisante.moverse()
 		game.onCollideDo(self,{zombie=>
 			if(zombie.nombre() == 'zombie'){
-				zombie.vida(zombie.vida() - 5)
-				if(zombie.vida() <= 0){
-					self.desaparecer_zombie()
+				zombie.perder_vida()
 				}
 			}
-		})
+		)
 		
-	}
-
-	method desaparecer_zombie(){
-		if(zombies.forEach{zombie=> zombie.vida()} <= 0){
-		game.removeVisual(zombies)
-	}
 }
 	method crear_invisibles(){
 		(0..7).forEach{ y => invisibles.add(new Invisible(position = game.at(0 , y)))}
@@ -71,21 +63,10 @@ object juego{
   		game.addVisual(zombieconcasco)
   		zombies.add(zombieconcasco)
   	} 
-  
-	method agregar_nuez(){
-  		if(soles>=50){	
-  			var nuez = new Nuez()
-  			game.addVisual(nuez)
-  			plantas.add(nuez)
-  			soles = soles - 50
-  		return true
-  		}
-  	return false
-  	}  
-  
+  	
 	method agregar_girasol(){	
   		if(soles>=25){	
-  			var girasol = new Girasol()
+  			const girasol = new Girasol()
   			game.addVisual(girasol)
  			girasoles.add(girasol)
   			plantas.add(girasol)
@@ -95,9 +76,29 @@ object juego{
   	return false
   	}
   	
+	method generar_soles(){
+  		soles = soles + 25 
+  	}
+ 
+	method mostrar_soles(){
+  		game.addVisual(cantidadSoles)
+  		}
+  	
+  
+	method agregar_nuez(){
+  		if(soles>=50){	
+  			const nuez = new Nuez()
+  			game.addVisual(nuez)
+  			plantas.add(nuez)
+  			soles = soles - 50
+  		return true
+  		}
+  	return false
+  	}  
+  
   	method agregar_lanzaguisantes(){
 		if(soles>=100){
-			var lanzaguisante = new Lanzaguisantes()
+			const lanzaguisante = new Lanzaguisantes()
 			game.addVisual(lanzaguisante)
 			plantas.add(lanzaguisante)
 			lanzaguisantes.add(lanzaguisante)
@@ -107,37 +108,23 @@ object juego{
 	return false
 	}
   	
-  
-	method generar_soles(){
-  		soles = soles + 25 
-  	}
- 
-	method mostrar_soles(){
-  		game.addVisual(cantidadSoles)
-  		}
-	}
-
-
-
-
+}
 class Plantas{
 	var property durabilidad = 0
 	var property position = game.at(1, 1.randomUpTo(5).truncate(0))
 	var property nombre = 'planta'
 	
-		
-	}
 	
 	method perder_durabilidad(){ 
-	durabilidad-=1 
-	if(durabilidad<=0){ 
-		self.desaparecer()
+		durabilidad-=1 
+		if(durabilidad<=0){ 
+			self.desaparecer()
 	}
 	 }
 
-method desaparecer(){
-	game.removeVisual(self)
-}
+	method desaparecer(){
+		game.removeVisual(self)
+}	
 }
 class Nuez inherits Plantas(durabilidad = 30, position = game.at(3, 1.randomUpTo(5).truncate(0))){
 	method image() = "nuez.png"	
@@ -170,8 +157,6 @@ class Guisante{
 }
 
 
-
-
 class Zombie { 
 var property nombre = 'zombie' 
 var property position = game.at(11, 1.randomUpTo(5).truncate(0)) 
@@ -193,6 +178,17 @@ method parar(){
 	}
 	return valor > 0
 	}
+
+	method perder_vida(){ 
+		vida-=1 
+		if(vida<=0){ 
+			self.desaparecer()
+	}
+	 }
+
+	method desaparecer(){
+		game.removeVisual(self)
+}	
 
 }
 class Zombiecomun inherits Zombie(vida = 10){
