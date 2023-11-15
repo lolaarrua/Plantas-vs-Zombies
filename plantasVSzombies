@@ -123,7 +123,8 @@ class Plantas{
 	method desaparecer(){
 		game.removeVisual(self)
 	}	
-		}
+}		
+		
 class Nuez inherits Plantas(durabilidad = 30, position = game.at(3, 1.randomUpTo(6).truncate(0))){
 	method image() = "nuez.png"	
 
@@ -153,7 +154,7 @@ class Guisante{
 				game.removeVisual(self)
 	}
 		}
-			}
+}
 
 
 class Zombie { 
