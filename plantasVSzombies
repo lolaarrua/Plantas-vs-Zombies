@@ -33,19 +33,6 @@ object juego{
     	
   	}
 
-	method lanzar_guisante(){
-		const guisante = new Guisante(position = (lanzaguisantes.forEach{lanzaguisantes => lanzaguisantes.position().right(1)}))
-		game.addVisual(guisante)
-		guisantes.add(guisante)
-		guisante.moverse()
-		game.onCollideDo(self,{zombie=>
-			if(zombie.nombre() == 'zombie'){
-				zombie.perder_vida()
-				}
-			}
-		)
-		
-}
 	method crear_invisibles(){
 		(0..7).forEach{ y => invisibles.add(new Invisible(position = game.at(0 , y)))}
 		invisibles.forEach{invisible => game.addVisual(invisible)}
@@ -107,7 +94,22 @@ object juego{
 		}
 	return false
 	}
-  	
+	
+	method lanzar_guisante(){
+	const guisante = new Guisante(position = (lanzaguisantes.forEach{lanzaguisantes => lanzaguisantes.position().right(1)}))
+		game.addVisual(guisante)
+		guisantes.add(guisante)
+		guisante.moverse()
+		game.onCollideDo(self,{zombie=>
+			if(zombie.nombre() == 'zombie'){
+				zombie.perder_vida()
+				}
+			}
+		)
+		
+}
+	
+	  	
 }
 class Plantas{
 	var property durabilidad = 0
@@ -172,8 +174,8 @@ method parar(){
 	var valor = 0
 	game.allVisuals().forEach{visual =>
 		if (visual.position() == position.left(1) and visual.nombre() == 'planta'){
-			valor +=1
 		visual.perder_durabilidad()
+			valor +=1
 		} 
 	}
 	return valor > 0
@@ -208,7 +210,6 @@ object paleta {
 }
 
 object cantidadSoles {
-
 	var property nombre = 'soles'
 	method position() = game.at(1,6)
 	
@@ -216,7 +217,7 @@ object cantidadSoles {
 	
 	method text() = ("Tus soles: " + juego.soles())
 	
-method textColor() = paleta.blanco()
+	method textColor() = paleta.blanco()
 }
 
 class Invisible{
