@@ -23,7 +23,7 @@ object juego{
     	game.onTick(30000, "zombie con casco aparece", { self.agregar_zombieconCasco() })
     	game.onTick(7000, "se genera sol", { girasoles.forEach{girasol=> self.generar_soles()} })
     	game.onTick(4000, "zombie se mueve", { zombies.forEach{zombie=> zombie.avanzar()} })
-    	game.onTick(2000, "lanzaguisantes lanza guisante", { lanzaguisantes.forEach{lanzaguisante=> lanzaguisante.lanzar_guisante()} })
+    	game.onTick(4000, "lanzaguisantes lanza guisante", { lanzaguisantes.forEach{lanzaguisante=> lanzaguisante.lanzar_guisante()} })
     	game.schedule(90000,{game.removeTickEvent("zombie aparece")})
     	game.schedule(90000,{game.removeTickEvent("zombie con casco aparece")})
     	
@@ -95,21 +95,11 @@ object juego{
 	return false
 	}
 	
-	method lanzar_guisante(){
-	const guisante = new Guisante(position = (lanzaguisantes.forEach{lanzaguisantes => lanzaguisantes.position().right(1)}))
-		game.addVisual(guisante)
-		guisantes.add(guisante)
-		guisante.moverse()
-		game.onCollideDo(self,{zombie=>
-			if(zombie.nombre() == "zombie"){
-				zombie.perder_vida()}})
-	}
-		  	
 }
 
 class Plantas{
 	var property durabilidad = 0
-	var property position = game.at(1, 1)
+	var property position = game.at(1, 1.randomUpTo(6).truncate(0))
 	var property nombre = "planta"
 	
 	
@@ -148,13 +138,20 @@ class Nuez inherits Plantas(durabilidad = 30, position = game.at(3, 1.randomUpTo
 class Lanzaguisantes inherits Plantas(durabilidad = 15, position = game.at(2,1.randomUpTo(6).truncate(0))){
 	method image() = "lanzaguisantes.png"
 	
+	method lanzar_guisante(){
+		const guisante = new Guisante(position = position.right(1) )
+		game.addVisual(guisante)
+		guisante.moverse()		
+		guisante.colisionar_con_zombie()
+	}
+	
 	}
 
 class Guisante{
-	var position
+	var property position = 0
 	var property nombre = "guisante"
 	method image() = "guisante.png"
-	method position() = position
+
 	
 	method moverse(){
 		game.onTick(200,"guisante",{position = position.right(1)})
@@ -163,8 +160,15 @@ class Guisante{
 				game.removeVisual(self)
 	}
 		}
+		
+	method colisionar_con_zombie(){
+	
+		game.onCollideDo(self,{zombie=>
+			if(zombie.nombre() == "zombie"){
+				zombie.perder_vida()
+				console.println(zombie.vida())}})
+	}
 }
-
 
 class Zombie { 
 var property nombre = "zombie"
