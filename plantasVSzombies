@@ -6,7 +6,6 @@ object juego{
 	var property lanzaguisantes = []
 	var property plantas = []
 	var property invisibles = []
-	var property guisantes = []
 	var property soles = 25
 
   	method iniciar(){
